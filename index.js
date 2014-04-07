@@ -9,7 +9,7 @@ var yelp = require("yelp").createClient({
 });
 
 // See http://www.yelp.com/developers/documentation/v2/search_api
-yelp.search({term: "food", location: "Broadway, New York"}, function(error, data) {
+yelp.search({term: "food", location: "Chinatown, New York"}, function(error, data) {
   console.log(error);
   console.log(data);
 });
