@@ -3,6 +3,8 @@ var router = require("./router");
 var example = require("./example");
 var async = require("async");
 
+server.start(router.route);
+
 function restaurant(){
   this.name = '';
   this.address = '';
@@ -19,21 +21,14 @@ var yelp = require("yelp").createClient({
   token_secret: "4fWit1dThh5s7Eep0G9NypPAtL0"
 });
 
-if( process.argv.length<=2){
-  return null;
-}
-else{
-  var category = process.argv[2];
-}
 
-if( process.argv.length > 3) {
-  var location = process.argv[3];
+  // var category = process.argv[2];
+  // var location = process.argv[3];
 
   // See http://www.yelp.com/developers/documentation/v2/search_api
   yelp.search({term: category, location: location}, function(error, data) {
     console.log(error);
     var restaurant_urls = get_urls(data);
-    //console.log(restaurant_urls);
     var i;
     var rating_list = []
   
@@ -47,12 +42,9 @@ if( process.argv.length > 3) {
       
       for(var i =0; i< rating_list.length; i++){
       }
-      //console.log('rating_list', rating_list);
       rest_of_program(rating_list);
     });
 });// end of each
-
-}// end if
 
 var get_urls = function(data){
   var i = 0;
@@ -111,8 +103,6 @@ var make_two_axes = function(rating_list){
     rating_dict['old_news'] = rating_dict['old_news'] - rating_dict['undiscovered'];
     delete rating_dict['introverted'];
     delete rating_dict['undiscovered'];
- 
-
   }
   return rating_list;
 };
