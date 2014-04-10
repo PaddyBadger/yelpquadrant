@@ -1,9 +1,5 @@
-var server = require ("./server");
-var router = require("./router");
 var example = require("./example");
 var async = require("async");
-
-//server.start(router.route);
 
 function restaurant(){
   this.name = '';
@@ -22,10 +18,8 @@ var yelp = require("yelp").createClient({
 });
 
 
-   var category = process.argv[2];
-   var location = process.argv[3];
+module.exports = { get_info: function(category, location){
 
-  // See http://www.yelp.com/developers/documentation/v2/search_api
   yelp.search({term: category, location: location}, function(error, data) {
     console.log(error);
     var restaurant_urls = get_urls(data);
@@ -91,7 +85,8 @@ var rest_of_program = function(rating_list){
         rating_list[i]['old_news'] = ((rating_list[i]['old_news']- old_min)/((old_max-old_min))*20)-10
      // console.log("norm_old: " + norm_old);
     }
-    console.log('rating list: ', rating_list);
+    var json = JSON.stringify(rating_list);
+    console.log(json);
 
 };
 
@@ -105,5 +100,5 @@ var make_two_axes = function(rating_list){
     delete rating_dict['undiscovered'];
   }
   return rating_list;
-};
+}}};
 
