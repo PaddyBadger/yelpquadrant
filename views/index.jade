@@ -1,6 +1,6 @@
 html.
   <head>
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="./javascripts/d3.js" charset="utf-8"></script>
     <link rel="stylesheet" href="./stylesheets/reset.css">
     <link rel="stylesheet" href="./stylesheets/style.css">
     <link href='http://fonts.googleapis.com/css?family=Metrophobic' rel='stylesheet' type='text/css'>
@@ -14,6 +14,57 @@ html.
       <label>Location: </label> <input type="text" name="location" id="location">
       <input class="submit" type="submit" value="Search">
   </header>
-    
+    <script>
+        d3.json("./data.json");
+
+        var jsonData = [{"url":"http://www.yelp.com/biz/blue-ribbon-sushi-new-york",
+                          "name":"Blue Ribbon Sushi",
+                          "image_url":"http://s3-media3.ak.yelpcdn.com/bphoto/NJl8mS0pHrU97WyMF1h0bA/ms.jpg",
+                          "price_range":"$$$",
+                          "address":["119 Sullivan St","New York","NY","10012"],
+                          "old_news":1.5151515151515156,
+                          "extroverted":1,
+                          "radius": 20,
+                          "color" : "green"},
+
+                          {"url":"http://www.yelp.com/biz/sushi-nakazawa-new-york",
+                          "name":"Sushi Nakazawa",
+                          "image_url":"http://s3-media2.ak.yelpcdn.com/bphoto/7_GG3MuwfOUoOLSWopY0dw/ms.jpg",
+                          "price_range":"$$$$",
+                          "address":["23 Commerce St","New York","NY","10014"],
+                          "old_news":1.5151515151515156,
+                          "extroverted":2,
+                          "radius": 20,
+                          "color" : "purple"},
+
+                          {"url":"http://www.yelp.com/biz/en-japanese-brasserie-new-york",
+                          "name":"EN Japanese Brasserie",
+                          "image_url":"http://s3-media3.ak.yelpcdn.com/bphoto/GMUqHcZzAsEXIi8O-n2YVw/ms.jpg",
+                          "price_range":"$$$",
+                          "address":["435 Hudson St","New York","NY","10014"],
+                          "old_news":-3.9393939393939394,
+                          "extroverted":-10,
+                          "radius": 20,
+                          "color" : "red"}]
+
+        var svgContainer = d3.select("body").append("svg")
+                                     .attr("width", 1000)
+                                     .attr("height", 1000)
+                                     .style("fill", "gray");
+ 
+        var circles = svgContainer.selectAll("circle")
+                          .data(jsonData)
+                          .enter()
+                          .append("circle");
+
+        var circleAttributes = circles
+                       .attr("cx", function (d) { var positionX = Math.round((d.old_news + 11)*50);             
+                                                  return positionX; })
+                       .attr("cy", function (d) { var positionY = Math.round((d.extroverted + 11)*20);
+                                                  return positionY; })
+                       .attr("r", function (d) { return d.radius; })
+                       .style("fill", function(d) { return d.color; });
+
+    </script>
     </form> 
   </body>
