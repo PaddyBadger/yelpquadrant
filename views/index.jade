@@ -15,7 +15,6 @@ html.
       <input class="submit" type="submit" value="Search">
   </header>
     <script>
-        d3.json("./data.json");
 
         var jsonData = [{"url":"http://www.yelp.com/biz/blue-ribbon-sushi-new-york",
                           "name":"Blue Ribbon Sushi",
@@ -24,7 +23,7 @@ html.
                           "address":["119 Sullivan St","New York","NY","10012"],
                           "old_news":1.5151515151515156,
                           "extroverted":1,
-                          "radius": 20,
+                          
                           "color" : "green"},
 
                           {"url":"http://www.yelp.com/biz/sushi-nakazawa-new-york",
@@ -33,8 +32,8 @@ html.
                           "price_range":"$$$$",
                           "address":["23 Commerce St","New York","NY","10014"],
                           "old_news":1.5151515151515156,
-                          "extroverted":2,
-                          "radius": 20,
+                          "extroverted":5,
+                          
                           "color" : "purple"},
 
                           {"url":"http://www.yelp.com/biz/en-japanese-brasserie-new-york",
@@ -44,26 +43,74 @@ html.
                           "address":["435 Hudson St","New York","NY","10014"],
                           "old_news":-3.9393939393939394,
                           "extroverted":-10,
-                          "radius": 20,
                           "color" : "red"}]
 
         var svgContainer = d3.select("body").append("svg")
-                                     .attr("width", 1000)
-                                     .attr("height", 1000)
-                                     .style("fill", "gray");
- 
-        var circles = svgContainer.selectAll("circle")
+                                     .attr("width", 1605)
+                                     .attr("height", 1605)
+                                     .style("border", "1px solid black");     
+
+        var svgWidth = 600;
+        var svgHeight = 600;
+
+        var quadcoords = [];
+        quadcoords.push({x:0, y:0});
+        quadcoords.push({x:svgWidth/2+5, y:0});
+        quadcoords.push({x:0, y:(svgHeight/2)+5});
+        quadcoords.push({x:(svgWidth/2)+5, y:(svgHeight/2)+5});
+
+        var squarecoordinates = [];
+
+        var sqperquad = 30;
+        for (var s = 0; s< quadcoords.length; s++){
+            for(var i = 0; i<sqperquad; i++){
+                for (var j=0; j< sqperquad; j++){
+                    squarecoordinates.push({x: i*(svgWidth/(sqperquad*2))+quadcoords[s].x, y: j*(svgHeight/(sqperquad*2))+quadcoords[s].y});
+
+                }
+            }
+        }
+
+        var squares = svgContainer.selectAll("rect")
+            .data(squarecoordinates)
+            .enter().append("rect");
+            console.log('push all squares');
+
+        var squareAttributes = squares
+            .attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y; })
+            .attr("width", 8)
+            .attr("height", 8)
+            .attr("class", "grid")
+            .style("fill", "ADFFD6");
+
+        var restaurantText = svgContainer.selectAll("text")
+                          .data(jsonData)
+                          .enter()
+                          .append("text");
+
+
+          var restaurantLabels = restaurantText
+                 .attr("x", function(d) { var positionX = Math.round((d.old_news + 11)*50); return positionX;})
+                 .attr("y", function(d) { var positionY = Math.round((d.extroverted + 11)*20); return positionY; })
+                 .text( function (d) { return d.name })
+                 .attr("font-family", "sans-serif")
+                 .attr("font-size", "20px")
+                 .attr("fill", "black")
+                 .attr("class", "text");
+
+          var restaurantBackground = svgContainer.selectAll("circle")
                           .data(jsonData)
                           .enter()
                           .append("circle");
 
-        var circleAttributes = circles
-                       .attr("cx", function (d) { var positionX = Math.round((d.old_news + 11)*50);             
-                                                  return positionX; })
-                       .attr("cy", function (d) { var positionY = Math.round((d.extroverted + 11)*20);
-                                                  return positionY; })
-                       .attr("r", function (d) { return d.radius; })
-                       .style("fill", function(d) { return d.color; });
+        var restaurantAttributes = restaurantBackground
+                       .attr("cx", function (d) { var positionX = Math.round((d.old_news + 11)*50); return positionX; })
+                       .attr("cy", function (d) { var positionY = Math.round((d.extroverted + 11)*20); return positionY; })
+                       .attr("r", 70)
+                       
+                       .attr("class", "background")
+                       .style("fill", function(d) { return d.color; });   
 
     </script>
     </form> 

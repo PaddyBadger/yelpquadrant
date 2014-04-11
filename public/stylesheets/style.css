@@ -70,3 +70,15 @@ input[type=text] {
   height: 30px;
 }
 
+.grid {
+  z-index: 0;
+}
+
+.text {
+  z-index: 100;
+}
+
+.background {
+  z-index: 50;
+}
+
