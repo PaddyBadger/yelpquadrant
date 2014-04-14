@@ -1,15 +1,20 @@
-body {
-  margin: auto;
-  font-family: 'Metrophobic', sans-serif;
-}
-
 header {
   height: 100px;
   width:100%;
   top:0px;
+  left: 0px;
   background-color: rgba(0,0,0,1);
+  position: absolute;
 }
 
+
+body {
+  margin: auto;
+  margin-top: 150px;
+  width:800px;
+  margin-bottom: 50px;
+  font-family: 'Metrophobic', sans-serif;
+}
 
 button {
   background-color: rgba(255,255,255,0.9);
@@ -76,6 +81,9 @@ input[type=text] {
 
 .text {
   z-index: 100;
+  font-family: 'Metrophobic', sans-serif;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .background {

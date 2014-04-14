@@ -1,6 +1,7 @@
 html.
   <head>
     <script src="./javascripts/d3.js" charset="utf-8"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="./stylesheets/reset.css">
     <link rel="stylesheet" href="./stylesheets/style.css">
     <link href='http://fonts.googleapis.com/css?family=Metrophobic' rel='stylesheet' type='text/css'>
@@ -10,108 +11,152 @@ html.
   <header>
     <h1>Quadrants</h1>
     <form action="/send" method="get" id="form">
-      <label>Search: </label><input type="text" name="category" id="search"<br>
-      <label>Location: </label> <input type="text" name="location" id="location">
+      <label>Search: </label><input type="text" id="search1"<br>
+      <label>Location: </label> <input type="text" id="search2">
       <input class="submit" type="submit" value="Search">
+      </form>
+    
   </header>
     <script>
 
-        var jsonData = [{"url":"http://www.yelp.com/biz/blue-ribbon-sushi-new-york",
-                          "name":"Blue Ribbon Sushi",
-                          "image_url":"http://s3-media3.ak.yelpcdn.com/bphoto/NJl8mS0pHrU97WyMF1h0bA/ms.jpg",
-                          "price_range":"$$$",
-                          "address":["119 Sullivan St","New York","NY","10012"],
-                          "old_news":1.5151515151515156,
-                          "extroverted":1,
-                          
-                          "color" : "green"},
+    $(document).ready(function(e) { 
+          $(".submit").click(function(e) {
+            e.preventDefault();
+            
+            var formData = {
+              'category': document.getElementById("search1").value,
+              'location': document.getElementById("search2").value
+            };
 
-                          {"url":"http://www.yelp.com/biz/sushi-nakazawa-new-york",
-                          "name":"Sushi Nakazawa",
-                          "image_url":"http://s3-media2.ak.yelpcdn.com/bphoto/7_GG3MuwfOUoOLSWopY0dw/ms.jpg",
-                          "price_range":"$$$$",
-                          "address":["23 Commerce St","New York","NY","10014"],
-                          "old_news":1.5151515151515156,
-                          "extroverted":5,
-                          
-                          "color" : "purple"},
+            $.ajax({
+              type: "GET",
+              data: formData,
+              url: '/send',
+              dataType: 'json'
+            }).done(function(data) {
+              console.log(data);
+              makeRestaurantCircles(data);
+              makeRestaurantLabels(data);
 
-                          {"url":"http://www.yelp.com/biz/en-japanese-brasserie-new-york",
-                          "name":"EN Japanese Brasserie",
-                          "image_url":"http://s3-media3.ak.yelpcdn.com/bphoto/GMUqHcZzAsEXIi8O-n2YVw/ms.jpg",
-                          "price_range":"$$$",
-                          "address":["435 Hudson St","New York","NY","10014"],
-                          "old_news":-3.9393939393939394,
-                          "extroverted":-10,
-                          "color" : "red"}]
+            });
+            
+          });
 
-        var svgContainer = d3.select("body").append("svg")
-                                     .attr("width", 1605)
-                                     .attr("height", 1605)
-                                     .style("border", "1px solid black");     
+            var svgWidth = 800;
+            var svgHeight = 800;
+            var offset = 5;
+            var padding = 50;
+            var svgContainer = d3.select("body").append("svg")
+                                         .attr("width", svgWidth+2*padding+offset)
+                                         .attr("height", svgHeight+2*padding+offset);
+                                         //.style("border", "1px solid black");     
 
-        var svgWidth = 600;
-        var svgHeight = 600;
+            var axisScale = d3.scale.linear().domain([-10,10]).range([padding, svgWidth+padding+(offset/2)]);
 
-        var quadcoords = [];
-        quadcoords.push({x:0, y:0});
-        quadcoords.push({x:svgWidth/2+5, y:0});
-        quadcoords.push({x:0, y:(svgHeight/2)+5});
-        quadcoords.push({x:(svgWidth/2)+5, y:(svgHeight/2)+5});
+        var makeGraphSquares = function(){
+            var graphSquaresGroup = svgContainer.append("g");
+            var quadcoords = [];
+            quadcoords.push({x:padding, y:padding});
+            quadcoords.push({x:svgWidth/2+offset+padding, y:padding});
+            quadcoords.push({x:padding, y:(svgHeight/2)+offset+padding});
+            quadcoords.push({x:(svgWidth/2)+offset+padding, y:(svgHeight/2)+offset+padding});
 
-        var squarecoordinates = [];
+            var squarecoordinates = [];
 
-        var sqperquad = 30;
-        for (var s = 0; s< quadcoords.length; s++){
-            for(var i = 0; i<sqperquad; i++){
-                for (var j=0; j< sqperquad; j++){
-                    squarecoordinates.push({x: i*(svgWidth/(sqperquad*2))+quadcoords[s].x, y: j*(svgHeight/(sqperquad*2))+quadcoords[s].y});
-
+            var sqperquad = 30;
+            for (var s = 0; s< quadcoords.length; s++){
+                for(var i = 0; i<sqperquad; i++){
+                    for (var j=0; j< sqperquad; j++){
+                        squarecoordinates.push({x: i*(svgWidth/(sqperquad*2))+quadcoords[s].x, y: j*(svgHeight/(sqperquad*2))+quadcoords[s].y});
+                    }
                 }
             }
-        }
 
-        var squares = svgContainer.selectAll("rect")
-            .data(squarecoordinates)
-            .enter().append("rect");
-            console.log('push all squares');
+            var squares = graphSquaresGroup.selectAll("rect")
+                .data(squarecoordinates)
+                .enter().append("rect");
+                console.log('push all squares');
 
-        var squareAttributes = squares
-            .attr("x", function(d) { return d.x; })
-            .attr("y", function(d) { return d.y; })
-            .attr("width", 8)
-            .attr("height", 8)
-            .attr("class", "grid")
-            .style("fill", "ADFFD6");
+            var squareAttributes = squares
+                .attr("x", function(d) { return d.x; })
+                .attr("y", function(d) { return d.y; })
+                .attr("width", 8)
+                .attr("height", 8)
+                .attr("class", "grid")
+                .style("fill", "ADFFD6");
+          };
 
-        var restaurantText = svgContainer.selectAll("text")
-                          .data(jsonData)
-                          .enter()
-                          .append("text");
+        var makeRestaurantCircles = function(jsonData){
 
+             var restaurantCircleBackground = svgContainer.selectAll("circle")
+                  .data(jsonData)
+                  .enter()
+                  .append("circle");
 
-          var restaurantLabels = restaurantText
-                 .attr("x", function(d) { var positionX = Math.round((d.old_news + 11)*50); return positionX;})
-                 .attr("y", function(d) { var positionY = Math.round((d.extroverted + 11)*20); return positionY; })
-                 .text( function (d) { return d.name })
-                 .attr("font-family", "sans-serif")
-                 .attr("font-size", "20px")
-                 .attr("fill", "black")
-                 .attr("class", "text");
+              var restaurantCircleAttributes = restaurantCircleBackground
+                  .attr("cx", function(d) { return axisScale(d.old_news)})
+                  .attr("cy", function (d) {return axisScale(d.extroverted)})
+                  .attr("r", 8)
+                  .attr("class", "background")
+                  .style("stroke", "gray")
+                  .style("fill", "white")
+                  .style("stroke-width", "10 px")
+                  .classed("circle", true)
+                  .on("mouseover", function() { d3.select(d3.event.target).style("fill", "gray"); })
+                  .on("mouseout", function() { d3.select(d3.event.target).style("fill", "white"); });
+        };
 
-          var restaurantBackground = svgContainer.selectAll("circle")
-                          .data(jsonData)
-                          .enter()
-                          .append("circle");
+      var makeRestaurantLabels = function(jsonData){
+          var restaurantTextGroup = svgContainer.append("g");
 
-        var restaurantAttributes = restaurantBackground
-                       .attr("cx", function (d) { var positionX = Math.round((d.old_news + 11)*50); return positionX; })
-                       .attr("cy", function (d) { var positionY = Math.round((d.extroverted + 11)*20); return positionY; })
-                       .attr("r", 70)
-                       
-                       .attr("class", "background")
-                       .style("fill", function(d) { return d.color; });   
+          var restaurantText = restaurantTextGroup.selectAll("text")
+                            .data(jsonData)
+                            .enter()
+                            .append("text");
+
+            var restaurantLabels = restaurantText
+                    .attr("x", function(d) { return axisScale(d.old_news)+3;})
+                    .attr("y", function (d) {return axisScale(d.extroverted)})
+                   .text( function (d) { return d.name })
+                   .attr("font-family", "monospace")
+                   .attr("font-size", "12px")
+                   .attr("fill", "black")
+                   .style("text-decoration", "underline")
+                   .attr("class", "text");
+      };
+
+      var makeLabel = function(){
+
+        var labelGroup = svgContainer.append("g");       
+
+        var labelArray = [["Introverted", [-11, 0]], ["Extroverted", [8, 0]], ["Old News", [-1, -10.5]], ["Undiscovered", [-1.5, 10.5]]];
+        console.log(labelArray);
+        var labelSet = labelGroup.selectAll("text").data(labelArray).enter().append("text");
+        console.log("here");
+        var labelAttributes = labelSet
+                .attr("x", function(d){return axisScale(d[1][0])})
+                .attr("y", function(d){return axisScale(d[1][1])})
+                          .text(function(d){return d[0]})
+                          .attr("font-family", "monospace")
+                          .style("font-weight","bold")
+                          .style("font-size", "20")
+                          .attr("fill", "black");
+
+        var labelSquareGroup = svgContainer.append("g");       
+        var labelSquares = labelSquareGroup.selectAll("square").data(labelArray).enter().append("square");
+        var labelAttributes = labelSquares
+                .attr("x", function(d){return axisScale(d[1][0])})
+                .attr("y", function(d){return axisScale(d[1][1])})
+                .attr("width", 5)
+                .attr("height", 5)
+                .attr("fill", "red"); // <-- this doesnt really work
+      };
+      makeGraphSquares();
+      makeLabel();
+     });
 
     </script>
-    </form> 
+   
   </body>
+  </html>
+
