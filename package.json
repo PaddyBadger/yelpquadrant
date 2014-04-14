@@ -1,7 +1,8 @@
 {
-  "name": "application-name",
+  "name": "yelp-quadrants",
+  "description":"Yelp Quadrants with Node.js and Express.js",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "node ./bin/www"
   },
