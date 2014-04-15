@@ -20,7 +20,10 @@ html.
     <script>
 
     $(document).ready(function(e) { 
+
           $(".submit").click(function(e) {
+            $('.text').remove();
+            $('.circle').remove();
             e.preventDefault();
             
             var formData = {
@@ -102,6 +105,8 @@ html.
                   .style("fill", "white")
                   .style("stroke-width", "10 px")
                   .classed("circle", true)
+                  .style("cursor", "pointer")
+                  .on("click", function (d) {window.open(d.url, "_blank")})
                   .on("mouseover", function() { d3.select(d3.event.target).style("fill", "gray"); })
                   .on("mouseout", function() { d3.select(d3.event.target).style("fill", "white"); });
         };
@@ -117,11 +122,15 @@ html.
             var restaurantLabels = restaurantText
                     .attr("x", function(d) { return axisScale(d.old_news)+3;})
                     .attr("y", function (d) {return axisScale(d.extroverted)})
-                   .text( function (d) { return d.name })
+                   .text( function (d) { return d.name + "\n" + d.price_range })
                    .attr("font-family", "monospace")
                    .attr("font-size", "12px")
                    .attr("fill", "black")
                    .style("text-decoration", "underline")
+                   .on("click", function (d) {window.open(d.url, "_blank")})
+                   .on("mouseover", function() { d3.select(d3.event.target).attr("fill", "gray"); })
+                   .on("mouseout", function() { d3.select(d3.event.target).attr("fill", "black"); })
+                   .style("cursor", "pointer")
                    .attr("class", "text");
       };
 
@@ -148,8 +157,7 @@ html.
                 .attr("x", function(d){return axisScale(d[1][0])})
                 .attr("y", function(d){return axisScale(d[1][1])})
                 .attr("width", 5)
-                .attr("height", 5)
-                .attr("fill", "red"); // <-- this doesnt really work
+                .attr("height", 5);
       };
       makeGraphSquares();
       makeLabel();

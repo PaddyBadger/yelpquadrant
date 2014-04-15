@@ -89,6 +89,7 @@ var get_urls = function(data){
        // console.log("norm_old: " + norm_old);
       }
      // var jsonData = JSON.stringify(rating_list);
+      console.log(rating_list);
       cbf(rating_list);
   };
 
