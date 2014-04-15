@@ -88,8 +88,6 @@ var get_urls = function(data){
           rating_list[i]['old_news'] = ((rating_list[i]['old_news']- old_min)/((old_max-old_min))*20)-10
        // console.log("norm_old: " + norm_old);
       }
-     // var jsonData = JSON.stringify(rating_list);
-      console.log(rating_list);
       cbf(rating_list);
   };
 

@@ -1,6 +1,6 @@
 {
   "name": "yelp-quadrants",
-  "description":"Yelp Quadrants with Node.js and Express.js",
+  "description": "Yelp Quadrants with Node.js and Express.js",
   "version": "0.0.1",
   "private": false,
   "scripts": {
@@ -10,6 +10,8 @@
     "express": "~4.0.0",
     "debug": "~0.7.4",
     "jade": "~1.3.0",
-    "body-parser": "^1.0.1"
+    "body-parser": "^1.0.1",
+    "request": "^2.34.0",
+    "cheerio": "^0.15.0"
   }
 }
