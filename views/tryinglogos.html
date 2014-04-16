@@ -1,9 +1,10 @@
-html.
+<!DOCTYPE html>
   <head>
-    <script src="./javascripts/d3.js" charset="utf-8"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="./stylesheets/reset.css">
-    <link rel="stylesheet" href="./stylesheets/style.css">
+    <script src="../public/javascripts/d3.js" charset="utf-8"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="../public/stylesheets/reset.css">
+    <link rel="stylesheet" href="../public/stylesheets/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Metrophobic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Gilda+Display|Noto+Serif|Roboto+Slab:400,300' rel='stylesheet' type='text/css'>
 
 
@@ -54,11 +55,7 @@ html.
               url: '/send',
               dataType: 'json'
             }).done(function(data) {
-              console.log("data in jade", data);
-              if(data.length === 0) {
-                console.log("I should be showing");
-                $('.noResult').show();
-              }
+              console.log(data);
               $('.waiting').hide();
               makeRestaurantCircles(data);
               makeRestaurantLabels(data);
@@ -213,9 +210,7 @@ html.
       };
 
       var makeLabel = function(){
-     
         var labelArray = [["Introverted", [-11.5, 0], "INTRO-", "VERTED"], ["Extroverted", [10, 0], "EXTRO-", "VERTED"], ["Old News", [-.75, -11], "OLD", "NEWS"], ["Undiscovered", [-1, 10.5], "UNDIS-", "COVERED"]];
-        
         var labelCircleGroup = svgContainer.append("g");
         var labelCircleSet = labelCircleGroup.selectAll("circle").data(labelArray).enter().append("circle");
         var labelCircleAttributes = labelCircleSet
@@ -226,10 +221,13 @@ html.
                               
                                   .style("stroke", "#3BA66E")
                                   .style("stroke-width",2);
- 
-        var labelGroup = svgContainer.append("g");  
-        var labelGroup2 = svgContainer.append("g");
 
+
+
+
+        var labelGroup = svgContainer.append("g");     
+         var labelGroup2 = svgContainer.append("g");      
+   
         var labelSet = labelGroup.selectAll("text").data(labelArray).enter().append("text");
         var labelSet2 = labelGroup2.selectAll("text").data(labelArray).enter().append("text");
         var labelAttributes = labelSet
@@ -246,6 +244,7 @@ html.
                           .style("font-size", "18")
                           .attr("class", "firsttext")
                           .attr("fill", "black");
+
         var labelAttributesNewLine = labelSet2
                 .attr("x", function(d){
                   xlocation = axisScale(d[1][0])-8;
@@ -256,11 +255,11 @@ html.
                 .attr("y", function(d){return axisScale(d[1][1])+20})
                           .text(function(d){return d[3]})
                           .attr("font-family", "Noto Serif")
-                          .style("font-weight","bolder")
+                          .style("font-weight","bold")
                           .style("font-size", "18")
                           .attr("class", "secondtext")
                           .attr("fill", "black");
-
+        
       };
       makeGraphSquares();
       makeLabel();
@@ -269,3 +268,4 @@ html.
     </script>
    
   </body>
+  </html>

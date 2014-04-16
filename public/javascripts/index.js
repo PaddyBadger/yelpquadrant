@@ -27,7 +27,6 @@ module.exports = { get_info: function(category, location, cbf){
     var i;
     var rating_list = []
   
-
     async.each(restaurant_urls, function(item, callback){
         example.get_ratings(item, function(rating_dict) {
             rating_list.push(rating_dict);  
@@ -44,6 +43,15 @@ module.exports = { get_info: function(category, location, cbf){
 var get_urls = function(data){
   var i = 0;
   var urls = []
+  var str = data.toString();
+  console.log(str);
+  var n = str.indexOf("error");
+  console.log(n);
+  if (n > 0) {
+    console.log("Hello ladies, I am an error");
+    data = [];
+    return data;
+  } 
   number_businesses = data['businesses'].length;
   for(i = 0; i< number_businesses; i++){
     var dict = {};
@@ -98,7 +106,7 @@ var get_urls = function(data){
       }
 
       console.log("new rating list");
-      console.log(rating_list);
+      console.log("rating list in rest of program", rating_list);
 
       cbf(rating_list);
   };

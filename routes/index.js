@@ -12,7 +12,8 @@ router.get('/send', function(req, res) {
   var category = req.query.category;
   var location = req.query.location;
   apiJS.get_info(category, location, function(data) {
-     res.json(data);
+    console.log("routes data", data);
+    res.json(data);
   });
 });
 
