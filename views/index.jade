@@ -5,25 +5,43 @@ html.
     <link rel="stylesheet" href="./stylesheets/reset.css">
     <link rel="stylesheet" href="./stylesheets/style.css">
     <link href='http://fonts.googleapis.com/css?family=Metrophobic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Gilda+Display|Noto+Serif|Roboto+Slab:400,300' rel='stylesheet' type='text/css'>
+
 
   </head>
   <body>
   <header>
     <h1>Quadrants</h1>
     <form action="/send" method="get" id="form">
-      <label>Search: </label><input type="text" id="search1"<br>
-      <label>Location: </label> <input type="text" id="search2">
+      <label>I'm Looking For: </label><input type="text" id="search1"<br>
+      <label>In: </label> <input type="text" id="search2">
       <input class="submit" type="submit" value="Search">
-      </form>
-    
+      </form>  
   </header>
+    <div class="waiting">
+      <h4>Searching for your results...</h4>
+    </div>
+    <div class="noResult">
+      <h4>No results found</h4>
+    </div>
     <script>
 
     $(document).ready(function(e) { 
+      $('.waiting').hide();
+      $('.noResult').hide();
 
           $(".submit").click(function(e) {
             $('.text').remove();
             $('.circle').remove();
+            $('.waiting').show();
+
+            $('.background').remove();
+            $('.infoText').remove();
+            $('.text').remove();
+            $('.textInfo').remove();
+            $('.infoBackground').remove();
+
+
             e.preventDefault();
             
             var formData = {
@@ -38,6 +56,7 @@ html.
               dataType: 'json'
             }).done(function(data) {
               console.log(data);
+              $('.waiting').hide();
               makeRestaurantCircles(data);
               makeRestaurantLabels(data);
 
@@ -49,11 +68,26 @@ html.
             var svgHeight = 800;
             var offset = 5;
             var padding = 50;
+            var fullsquare = (svgWidth/2)/30;
             var svgContainer = d3.select("body").append("svg")
-                                         .attr("width", svgWidth+2*padding+offset)
+                                         .attr("width", svgWidth+2*padding+offset+150)
                                          .attr("height", svgHeight+2*padding+offset);
             
             var axisScale = d3.scale.linear().domain([-10,10]).range([padding, svgWidth+padding+(offset/2)]);
+        
+        var align = function(coord){
+              var oldcoord = Math.floor((axisScale(coord)-padding)/(fullsquare));      
+              var newcoord = oldcoord*(fullsquare)+padding;
+              if(newcoord>(svgHeight/2)){
+                  newcoord+=offset;
+              }
+              if(newcoord>svgHeight+offset){
+                  newcoord-=fullsquare;
+              }
+              return newcoord;
+
+        };
+
 
         var makeGraphSquares = function(){
             var graphSquaresGroup = svgContainer.append("g");
@@ -97,28 +131,8 @@ html.
                   .append("rect");
 
               var restaurantCircleAttributes = restaurantCircleBackground
-                  .attr("x", function(d) { 
-                  var oldx = Math.floor((axisScale(d.old_news)-padding)/(13.333333333));
-                  //console.log(oldx);
-                  var newx = oldx*(13.3333333333)+padding;
-                  if(newx>(svgHeight/2)+padding){
-                  newx+=offset;
-
-                  }
-                 //console.log(newx)
-
-                  return newx})
-                  .attr("y", function (d) {
-                  var oldy = Math.floor((axisScale(d.extroverted)-padding)/(13.333333333333));
-                  //console.log(oldy);
-                  var newy = oldy*(13.33333333333)+padding;
-                  if(newy>(svgHeight/2)+padding){
-                  newy+=offset;
-
-                  }
-                 //console.log(newy)
-
-                  return newy})
+                  .attr("x", function(d) { return align(d.extroverted)})
+                  .attr("y", function (d) {return align(d.old_news)})
                   .attr("width", 8)
                   .attr("height", 8)
                   .attr("class", "background")
@@ -133,6 +147,30 @@ html.
         };
 
       var makeRestaurantLabels = function(jsonData){
+        var infoBackgroundGroup = svgContainer.append("g")
+
+            var infoBackground = infoBackgroundGroup.selectAll("rect .infoText")
+                    .data(jsonData)
+                    .enter()
+                    .append("rect");
+
+            var backgroundRect = infoBackground
+                   .attr("x", function(d) { return align(d.extroverted)+fullsquare})
+                  .attr("y", function (d) { return align(d.old_news)-fullsquare-1})
+                  .attr("width", function(d){
+                  console.log(d.name);
+                  var titlelength = d.name.length;
+                  var titlewidth = titlelength*fullsquare-(fullsquare*4);
+                  console.log("titlewidth: ", titlewidth);
+                  var addresslength = d.address.length;
+                  var addresswidth = addresslength*fullsquare*6;
+                  console.log("addresswidth: ", addresswidth);
+                  return (addresswidth>titlewidth)? addresswidth:titlewidth})
+                  .attr("height", fullsquare*3)
+                  .attr("class", "infoBackground")
+                  .attr("fill", "white");
+
+
           var restaurantTextGroup = svgContainer.append("g");
 
           var restaurantText = restaurantTextGroup.selectAll("text .text")
@@ -141,68 +179,19 @@ html.
                             .append("text");
 
             var restaurantLabels = restaurantText
-                   .attr("x", function(d) {  
-                  var oldx = Math.floor((axisScale(d.old_news)-padding)/(13.333333333));
-                  //console.log(oldx);
-                  var newx = oldx*(13.3333333333)+padding;
-                  console.log("hhjlskdfjlsk");
-                  if(newx>(svgHeight/2)+padding){
-                  newx+=offset;
-
-                  }
-                  newx+=13.333333333;
-
-
-                   return newx })
-                   .attr("y", function (d) {var oldy = Math.floor((axisScale(d.extroverted)-padding)/(13.333333333333));
-                  //console.log(oldy);
-                  var newy = oldy*(13.33333333333)+padding;
-                  if(newy>(svgHeight/2)+padding){
-                  newy+=offset;
-                  }
-                  newy-=3;
-                        return newy})
+                   .attr("x", function(d) { return align(d.extroverted)+fullsquare})
+                   .attr("y", function (d) {return align(d.old_news)})
                    .text( function (d) { return d.name + " " + d.price_range})
                    .attr("font-size", "16px")
                    .attr("fill", "black")
-                   .style("text-decoration", "underline")
+              
                    .on("click", function (d) {window.open(d.url, "_blank")})
                    .on("mouseover", function() { d3.select(d3.event.target).attr("fill", "gray"); })
                    .on("mouseout", function() { d3.select(d3.event.target).attr("fill", "black"); })
                    .style("cursor", "pointer")
                    .attr("class", "text");
 
-            var infoBackgroundGroup = svgContainer.append("g")
-
-            var infoBackground = infoBackgroundGroup.selectAll("rect .infoText")
-                    .data(jsonData)
-                    .enter()
-                    .append("rect");
-
-            var backgroundRect = infoBackground
-                 .attr("x", function(d) {   var oldx = Math.floor((axisScale(d.old_news)-padding)/(13.333333333));
-                  //console.log(oldx);
-                  var newx = oldx*(13.3333333333)+padding;
-                  if(newx>(svgHeight/2)+padding){
-                  newx+=offset;
-
-                  }
-                  newx+=13.333333333;
-                   return newx})
-                  .attr("y", function (d) {
-                  var oldy = Math.floor((axisScale(d.extroverted)-padding)/(13.333333333333));
-                  //console.log(oldy);
-
-                  var newy = oldy*(13.33333333333)+padding;
-                  if(newy>(svgHeight/2)+padding){
-                  newy+=offset;
-                  }
-                  //newy+=13.333333333;
-                        return newy})
-                  .attr("width", function(d){return d.address.length*13.333333*4})
-                  .attr("height", 21.3333333333)
-                  .attr("class", "infoBackground")
-                  .attr("fill", "white");
+            
 
             var restaurantInfoGroup = svgContainer.append("g");
 
@@ -212,30 +201,8 @@ html.
                             .append("text");
 
             var restaurantMoreInfo = restaurantInfo
-                   .attr("x", function(d) {   
-                   var oldx = Math.floor((axisScale(d.old_news)-padding)/(13.333333333));
-                  var newx = oldx*(13.3333333333)+padding;
-                  if(newx>(svgHeight/2)+padding){
-                  newx+=offset;
-
-                  }
-                  newx+=13.333333333;
-
-
-                   return newx})
-                  .attr("y", function (d) {
-                  var oldy = Math.floor((axisScale(d.extroverted)-padding)/(13.333333333333));
-                  //console.log(oldy);
-
-                  var newy = oldy*(13.33333333333)+padding;
-                  if(newy>(svgHeight/2)+padding){
-                  newy+=offset;
-                  }
-                  newy+=(13.33333333333333);
-                        return newy})
-
-
-                   
+                   .attr("x", function(d) { return align(d.extroverted)+fullsquare})
+                    .attr("y", function (d) { return align(d.old_news)+fullsquare})
                    .text( function (d) { return d.address})
                    .attr("font-size", "12px")
                    .attr("fill", "black")
@@ -251,7 +218,7 @@ html.
                 .attr("x", function(d){return axisScale(d[1][0])})
                 .attr("y", function(d){return axisScale(d[1][1])})
                           .text(function(d){return d[0]})
-                          .attr("font-family", "monospace")
+                          .attr("font-family", "Noto Serif")
                           .style("font-weight","bold")
                           .style("font-size", "20")
                           .attr("fill", "black");
@@ -271,4 +238,3 @@ html.
     </script>
    
   </body>
-  </html>

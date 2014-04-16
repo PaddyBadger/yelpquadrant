@@ -1,4 +1,3 @@
-
 var request = require('request');
 var cheerio = require('cheerio');
 var async = require('async');
@@ -24,7 +23,7 @@ request(url, function(error, response, html){
 
     $('p.review_comment').each(function(i, element){
         var a = $(this);
-		    our_text.push(a.text());
+        our_text.push(a.text());
     });
 
 
@@ -32,8 +31,12 @@ request(url, function(error, response, html){
 
         var ad = $(this).find('address');
         address_components = [];
+        var i = 0;
         ad.find('span').each(function(index){
-        address_components.push($(this).text());
+          if(i<2){
+        address_components.push(' '+$(this).text());
+        i++;
+      }
       });
 
     });
@@ -95,4 +98,3 @@ request(url, function(error, response, html){
 }
 
 }
-

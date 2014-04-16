@@ -88,6 +88,18 @@ var get_urls = function(data){
           rating_list[i]['old_news'] = ((rating_list[i]['old_news']- old_min)/((old_max-old_min))*20)-10
        // console.log("norm_old: " + norm_old);
       }
+      sortByKey(rating_list, "old_news");
+      increment = rating_list.length/20;
+
+      console.log("increment is, ", increment, "reating list lenght,", rating_list.length);
+      for(var i = 0; i<rating_list.length; i++){
+        rating_list[rating_list.length-1-i]["old_news"] = (i*increment)-10;
+        console.log((i*increment)-10);
+      }
+
+      console.log("new rating list");
+      console.log(rating_list);
+
       cbf(rating_list);
   };
 
@@ -104,3 +116,10 @@ var make_two_axes = function(rating_list){
   return rating_list;
 }}};
 
+
+function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
